@@ -23,9 +23,6 @@ public class QrCodeGenerationController {
                 requestDTO.amount(),
                 requestDTO.channel()
         );
-
-
-
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
