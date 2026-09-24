@@ -6,11 +6,13 @@ import com.paf.pix_qrcode_generation.entity.Pix;
 import com.paf.pix_qrcode_generation.entity.PixStatus;
 import com.paf.pix_qrcode_generation.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
@@ -20,6 +22,7 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
     @Override
     public QRCodeResponseDTO execute(PixRequestDTO request) {
 
+        log.info("generateQRCodeUseCase.execute method started!");
         if (request.expiration() <= 0) {
             throw new IllegalArgumentException("Expiration must be greater than zero");
         }
@@ -37,13 +40,17 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
         pix.setDescription(request.description());
         pix.setExpiresAt(Instant.now().plusSeconds(request.expiration()));
 
+        log.info("Calling qrCodeService.generate method");
         String qrCode = qrCodeService.generate(pix);
 
+        log.info("QRCode received!");
         pix.setQrCode(qrCode);
         pix.setStatus(PixStatus.PENDING);
 
 
-
+        log.info("Persisting data into dynamoDB...");
+        log.info("QRCode saved with PENDING status!");
+        log.info("QRCode generation process finished succesfully!");
         return null;
     }
 }
