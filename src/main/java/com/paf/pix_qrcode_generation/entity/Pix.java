@@ -25,6 +25,6 @@ public class Pix {
     private Instant expiresAt;
 
     public Pix() {
-        this.id = UUID.randomUUID();
+        this.txid = UUID.randomUUID();
     }
 }
