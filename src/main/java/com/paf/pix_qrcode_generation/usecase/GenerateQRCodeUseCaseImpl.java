@@ -39,6 +39,8 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
         pix.setExpiration(request.expiration());
         pix.setDescription(request.description());
         pix.setExpiresAt(Instant.now().plusSeconds(request.expiration()));
+        pix.setReceiverName(request.receiver().name());
+        pix.setReceiverCity(request.receiver().city());
 
         log.info("Calling qrCodeService.generate method");
         String qrCode = qrCodeService.generate(pix);

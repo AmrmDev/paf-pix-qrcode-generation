@@ -18,6 +18,8 @@ public class Pix {
     private String qrCode;
     private Long expiration;
     private String description;
+    private String receiverName;
+    private String receiverCity;
 
     private PixStatus status;
 

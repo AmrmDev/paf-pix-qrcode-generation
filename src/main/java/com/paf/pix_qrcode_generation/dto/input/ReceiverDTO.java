@@ -4,5 +4,6 @@ public record ReceiverDTO(
         String name,
         String bank,
         String agency,
-        String accountNumber
+        String accountNumber,
+        String city
 ) {}
