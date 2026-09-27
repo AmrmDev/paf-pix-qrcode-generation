@@ -1,6 +1,8 @@
 package com.paf.pix_qrcode_generation.controller;
 
 import com.paf.pix_qrcode_generation.dto.input.PixRequestDTO;
+import com.paf.pix_qrcode_generation.dto.input.QRCodeRefundRequestDTO;
+import com.paf.pix_qrcode_generation.dto.output.QRCodeRefundResponseDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodeResponseDTO;
 import com.paf.pix_qrcode_generation.usecase.GenerateQRCodeUseCase;
 import com.paf.pix_qrcode_generation.usecase.RefundQRCodeUseCase;
