@@ -3,6 +3,7 @@ package com.paf.pix_qrcode_generation.controller;
 import com.paf.pix_qrcode_generation.dto.input.PixRequestDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodeResponseDTO;
 import com.paf.pix_qrcode_generation.usecase.GenerateQRCodeUseCase;
+import com.paf.pix_qrcode_generation.usecase.RefundQRCodeUseCase;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class QRCodeController {
 
     private final GenerateQRCodeUseCase generateQRCodeUseCase;
+    private final RefundQRCodeUseCase refundQRCodeUseCase;
 
-    public QRCodeController(GenerateQRCodeUseCase generateQRCodeUseCase) {
+    public QRCodeController(GenerateQRCodeUseCase generateQRCodeUseCase, RefundQRCodeUseCase refundQRCodeUseCase) {
         this.generateQRCodeUseCase = generateQRCodeUseCase;
+        this.refundQRCodeUseCase = refundQRCodeUseCase;
     }
 
     @PostMapping("/generate")
@@ -31,5 +34,13 @@ public class QRCodeController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/refund")
+    public ResponseEntity<QRCodeRefundResponseDTO> refund(@Valid @RequestBody QRCodeRefundRequestDTO request) {
+        log.info("Initializing refundQRCodeUseCase.execute method");
+        QRCodeRefundResponseDTO response = refundQRCodeUseCase.execute(request);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
