@@ -1,4 +1,9 @@
 package com.paf.pix_qrcode_generation.dto.output;
 
-public class QRCodeRefundResponseDTO {
+public record QRCodeRefundResponseDTO(
+        String requestId,
+        String txid,
+        String status,
+        String message
+) {
 }

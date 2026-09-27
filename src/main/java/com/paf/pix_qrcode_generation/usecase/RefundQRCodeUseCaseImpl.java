@@ -21,5 +21,9 @@ public class RefundQRCodeUseCaseImpl implements RefundQRCodeUseCase {
 
         log.info("RefundQRCodeUseCase.execute method started!");
 
+        return QRCodeRefundResponseDTO.refund(
+                request.requestId(),
+                request.txid()
+        );
     }
 }

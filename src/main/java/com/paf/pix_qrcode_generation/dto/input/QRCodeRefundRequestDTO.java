@@ -1,5 +1,13 @@
 package com.paf.pix_qrcode_generation.dto.input;
 
-public class QRCodeRefundRequestDTO {
+import jakarta.validation.constraints.NotBlank;
 
+public record QRCodeRefundRequestDTO(
+
+        @NotBlank
+        String requestId,
+
+        @NotBlank
+        String txid
+) {
 }
