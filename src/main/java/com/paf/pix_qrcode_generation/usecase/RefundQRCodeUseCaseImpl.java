@@ -19,5 +19,7 @@ public class RefundQRCodeUseCaseImpl implements RefundQRCodeUseCase {
     @Override
     public QRCodeRefundResponseDTO execute(QRCodeRefundRequestDTO request) {
 
+        log.info("RefundQRCodeUseCase.execute method started!");
+
     }
 }
