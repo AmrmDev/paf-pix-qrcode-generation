@@ -1,19 +1,15 @@
 package com.paf.pix_qrcode_generation.controller;
 
-import com.paf.pix_qrcode_generation.dto.input.PixRequestDTO;
-import com.paf.pix_qrcode_generation.dto.input.QRCodeRefundRequestDTO;
-import com.paf.pix_qrcode_generation.dto.output.QRCodeRefundResponseDTO;
-import com.paf.pix_qrcode_generation.dto.output.QRCodeResponseDTO;
+import com.paf.pix_qrcode_generation.dto.output.*;
+import com.paf.pix_qrcode_generation.dto.input.*;
 import com.paf.pix_qrcode_generation.usecase.GenerateQRCodeUseCase;
 import com.paf.pix_qrcode_generation.usecase.RefundQRCodeUseCase;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -42,6 +38,21 @@ public class QRCodeController {
     public ResponseEntity<QRCodeRefundResponseDTO> refund(@Valid @RequestBody QRCodeRefundRequestDTO request) {
         log.info("Initializing refundQRCodeUseCase.execute method");
         QRCodeRefundResponseDTO response = refundQRCodeUseCase.execute(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @PostMapping("/pay")
+    public ResponseEntity<QRCodePaymentResponseDTO> payQRCode(@Valid @RequestBody QRCodePaymentRequestDTO request) {
+        log.info("Payment request received! Calling payQRCodeUseCase.execute method.");
+        QRCodePaymentResponseDTO response = payQRCodeUseCase.execute(request);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @GetMapping("/payment-confirmation")
+    public ResponseEntity<QRCodePaymentConfirmationResponseDTO> paymentConfirmation(@Valid @RequestBody QRCodePaymentConfirmationRequestDTO request) {
+        log.info("Payment confirmation request received! Calling paymentConfirmationUseCase.execute method.");
+        QRCodePaymentConfirmationResponseDTO response = paymentConfirmationUseCase.execute(request);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
