@@ -51,12 +51,4 @@ public class QRCodeController {
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-
-    @GetMapping("/payment-confirmation")
-    public ResponseEntity<QRCodePaymentConfirmationResponseDTO> paymentConfirmation(@Valid @RequestBody QRCodePaymentConfirmationRequestDTO request) {
-        log.info("Payment confirmation request received! Calling paymentConfirmationUseCase.execute method.");
-        QRCodePaymentConfirmationResponseDTO response = paymentConfirmationUseCase.execute(request);
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
-    }
 }
