@@ -3,6 +3,7 @@ package com.paf.pix_qrcode_generation.controller;
 import com.paf.pix_qrcode_generation.dto.output.*;
 import com.paf.pix_qrcode_generation.dto.input.*;
 import com.paf.pix_qrcode_generation.usecase.GenerateQRCodeUseCase;
+import com.paf.pix_qrcode_generation.usecase.PayQRCodeUseCase;
 import com.paf.pix_qrcode_generation.usecase.RefundQRCodeUseCase;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
@@ -18,10 +19,12 @@ public class QRCodeController {
 
     private final GenerateQRCodeUseCase generateQRCodeUseCase;
     private final RefundQRCodeUseCase refundQRCodeUseCase;
+    private final PayQRCodeUseCase payQRCodeUseCase;
 
-    public QRCodeController(GenerateQRCodeUseCase generateQRCodeUseCase, RefundQRCodeUseCase refundQRCodeUseCase) {
+    public QRCodeController(GenerateQRCodeUseCase generateQRCodeUseCase, RefundQRCodeUseCase refundQRCodeUseCase, PayQRCodeUseCase payQRCodeUseCase) {
         this.generateQRCodeUseCase = generateQRCodeUseCase;
         this.refundQRCodeUseCase = refundQRCodeUseCase;
+        this.payQRCodeUseCase = payQRCodeUseCase;
     }
 
     @PostMapping("/generate")

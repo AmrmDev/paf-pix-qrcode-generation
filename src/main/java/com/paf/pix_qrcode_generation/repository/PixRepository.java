@@ -10,5 +10,7 @@ public interface PixRepository {
 
     Optional<Pix> findByRequestIdAndTxid(String requestId, UUID txid);
 
+    Optional<Pix> findByTxid(UUID txid);
+
     Pix save(Pix pix);
 }
