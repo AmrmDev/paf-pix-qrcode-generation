@@ -4,6 +4,7 @@ import com.paf.pix_qrcode_generation.dto.input.QRCodePaymentRequestDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodePaymentResponseDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodeRefundResponseDTO;
 import com.paf.pix_qrcode_generation.entity.Pix;
+import com.paf.pix_qrcode_generation.entity.PixStatus;
 import com.paf.pix_qrcode_generation.repository.PixRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,17 @@ public class PayQRCodeUseCaseImpl implements PayQRCodeUseCase {
                         "Pix not found for txid: " + request.txid()
                 ));
 
-        // próximas validações...
+        if (pix.getStatus() != PixStatus.PENDING) {
+            throw new IllegalStateException(
+                    "Pix cannot be paid. Current status: " + pix.getStatus()
+            );
+        }
+
+        pix.setStatus(PixStatus.PAID);
+
+        pixRepository.save(pix);
+
+        log.info("Pix {} successfully paid", pix.getTxid());
 
         return new QRCodePaymentResponseDTO(
                 pix.getRequestId(),

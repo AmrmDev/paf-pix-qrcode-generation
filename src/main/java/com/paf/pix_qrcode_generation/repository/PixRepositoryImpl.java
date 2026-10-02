@@ -8,7 +8,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,16 +20,6 @@ import java.util.UUID;
 public class PixRepositoryImpl implements PixRepository {
 
     private final DynamoDbClient dynamoDbClient;
-
-    @Override
-    public Optional<Pix> findByRequestIdAndTxid(String requestId, UUID txid) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Pix> findByTxid(UUID txid) {
-        return Optional.empty();
-    }
 
     @Override
     public Pix save(Pix pix) {
@@ -66,7 +56,7 @@ public class PixRepositoryImpl implements PixRepository {
         return pix;
     }
 
-    public Optional<Pix> findByTxId(UUID txid) {
+    public Optional<Pix> findByTxid(UUID txid) {
 
         Map<String, AttributeValue> key = new HashMap<>();
 

@@ -4,6 +4,7 @@ import com.paf.pix_qrcode_generation.dto.input.PixRequestDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodeResponseDTO;
 import com.paf.pix_qrcode_generation.entity.Pix;
 import com.paf.pix_qrcode_generation.entity.PixStatus;
+import com.paf.pix_qrcode_generation.repository.PixRepository;
 import com.paf.pix_qrcode_generation.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,13 @@ import java.time.Instant;
 public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
 
     private final QRCodeService qrCodeService;
+    private final PixRepository pixRepository;
 
     @Override
     public QRCodeResponseDTO execute(PixRequestDTO request) {
 
         log.info("generateQRCodeUseCase.execute method started!");
+
         if (request.expiration() <= 0) {
             throw new IllegalArgumentException("Expiration must be greater than zero");
         }
@@ -46,13 +49,17 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
         String qrCode = qrCodeService.generate(pix);
 
         log.info("QRCode received!");
+
         pix.setQrCode(qrCode);
         pix.setStatus(PixStatus.PENDING);
 
-
         log.info("Persisting data into dynamoDB...");
+
+        pixRepository.save(pix);
+
         log.info("QRCode saved with PENDING status!");
-        log.info("QRCode generation process finished succesfully!");
+        log.info("QRCode generation process finished successfully!");
+
         return null;
     }
 }

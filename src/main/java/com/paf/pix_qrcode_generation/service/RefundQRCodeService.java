@@ -3,6 +3,7 @@ package com.paf.pix_qrcode_generation.service;
 import com.paf.pix_qrcode_generation.entity.Pix;
 import com.paf.pix_qrcode_generation.entity.PixStatus;
 import com.paf.pix_qrcode_generation.repository.PixRepository;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,10 @@ public class RefundQRCodeService {
 
     private final PixRepository pixRepository;
 
-    public Pix refund(String requestId, UUID txid) {
+    public Pix refund(@NotBlank String s, UUID txid) {
 
         Pix pix = pixRepository
-                .findByRequestIdAndTxid(requestId, txid)
+                .findByTxid(txid)
                 .orElseThrow(() -> new RuntimeException("Pix not found"));
 
         pix.setStatus(PixStatus.REFUNDED);
