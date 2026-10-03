@@ -23,7 +23,6 @@ public class RefundQRCodeUseCaseImpl implements RefundQRCodeUseCase {
         log.info("refundQRCodeUseCase.execute method started!");
 
         Pix pix = refundQRCodeService.refund(
-                request.requestId(),
                 request.txid()
         );
 

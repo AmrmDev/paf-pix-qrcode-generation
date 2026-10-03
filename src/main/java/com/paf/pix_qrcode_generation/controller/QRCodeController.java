@@ -37,18 +37,18 @@ public class QRCodeController {
                 .body(response);
     }
 
-    @PostMapping("/refund")
-    public ResponseEntity<QRCodeRefundResponseDTO> refund(@Valid @RequestBody QRCodeRefundRequestDTO request) {
-        log.info("Initializing refundQRCodeUseCase.execute method");
-        QRCodeRefundResponseDTO response = refundQRCodeUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
-    }
-
     @PostMapping("/pay")
     public ResponseEntity<QRCodePaymentResponseDTO> payQRCode(@Valid @RequestBody QRCodePaymentRequestDTO request) {
         log.info("Payment request received! Calling payQRCodeUseCase.execute method.");
         QRCodePaymentResponseDTO response = payQRCodeUseCase.execute(request);
 
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @PostMapping("/refund")
+    public ResponseEntity<QRCodeRefundResponseDTO> refund(@Valid @RequestBody QRCodeRefundRequestDTO request) {
+        log.info("Initializing refundQRCodeUseCase.execute method");
+        QRCodeRefundResponseDTO response = refundQRCodeUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
