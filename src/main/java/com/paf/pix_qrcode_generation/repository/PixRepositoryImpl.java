@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -44,6 +45,10 @@ public class PixRepositoryImpl implements PixRepository {
 
         item.put("status", AttributeValue.builder()
                 .s(pix.getStatus().name())
+                .build());
+
+        item.put("expiresAt", AttributeValue.builder()
+                .s(pix.getExpiresAt().toString())
                 .build());
 
         PutItemRequest request = PutItemRequest.builder()
@@ -83,6 +88,9 @@ public class PixRepositoryImpl implements PixRepository {
         pix.setAmount(item.get("amount").s());
         pix.setPixKey(item.get("pixKey").s());
         pix.setStatus(PixStatus.valueOf(item.get("status").s()));
+        pix.setExpiresAt(
+                Instant.parse(item.get("expiresAt").s())
+        );
 
         return Optional.of(pix);
     }
