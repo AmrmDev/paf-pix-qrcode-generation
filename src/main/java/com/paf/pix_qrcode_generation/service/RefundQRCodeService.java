@@ -23,7 +23,14 @@ public class RefundQRCodeService {
                 .findByTxid(txid)
                 .orElseThrow(() -> new RuntimeException("Pix not found"));
 
+        if (pix.getStatus() != PixStatus.PAID) {
+            throw new IllegalStateException(
+                    "Pix cannot be refunded. Current status: " + pix.getStatus()
+            );
+        }
+
         log.info("Setting Pix Status to REFUNDED");
+
         pix.setStatus(PixStatus.REFUNDED);
 
         log.info("Done! Pix Status set to REFUNDED");
