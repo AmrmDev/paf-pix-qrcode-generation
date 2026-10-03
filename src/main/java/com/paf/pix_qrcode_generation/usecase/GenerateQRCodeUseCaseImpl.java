@@ -63,7 +63,8 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
         return new QRCodeResponseDTO(
                 pix.getRequestId(),
                 pix.getTxid().toString(),
-                pix.getStatus().name()
+                pix.getStatus().name(),
+                pix.getExpiresAt()
         );
     }
 }

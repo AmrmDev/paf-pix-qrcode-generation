@@ -3,6 +3,6 @@ package com.paf.pix_qrcode_generation.dto.output;
 public record QRCodeResponseDTO(
         String requestId,
         String txid,
-        String status
-) {
+        String status,
+        java.time.Instant expiresAt) {
 }
