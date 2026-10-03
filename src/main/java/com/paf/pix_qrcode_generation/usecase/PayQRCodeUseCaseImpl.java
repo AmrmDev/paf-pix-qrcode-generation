@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +34,13 @@ public class PayQRCodeUseCaseImpl implements PayQRCodeUseCase {
             throw new IllegalStateException(
                     "Pix cannot be paid. Current status: " + pix.getStatus()
             );
+        }
+
+        if (Instant.now().isAfter(pix.getExpiresAt())) {
+            pix.setStatus(PixStatus.EXPIRED);
+            pixRepository.save(pix);
+
+            throw new IllegalStateException("Pix has expired");
         }
 
         pix.setStatus(PixStatus.PAID);

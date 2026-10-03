@@ -60,6 +60,10 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
         log.info("QRCode saved with PENDING status!");
         log.info("QRCode generation process finished successfully!");
 
-        return null;
+        return new QRCodeResponseDTO(
+                pix.getRequestId(),
+                pix.getTxid().toString(),
+                pix.getStatus().name()
+        );
     }
 }
