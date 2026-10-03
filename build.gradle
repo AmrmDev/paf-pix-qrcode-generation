@@ -21,6 +21,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	implementation 'io.github.thgrcarvalho:pix-payload:0.1.0'
 	implementation platform('software.amazon.awssdk:bom:2.37.5')

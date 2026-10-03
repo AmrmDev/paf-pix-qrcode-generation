@@ -2,8 +2,9 @@ package com.paf.pix_qrcode_generation.service;
 
 import com.paf.pix_qrcode_generation.entity.Pix;
 import com.paf.pix_qrcode_generation.entity.PixStatus;
+import com.paf.pix_qrcode_generation.exception.InvalidPixStateException;
+import com.paf.pix_qrcode_generation.exception.PixNotFoundException;
 import com.paf.pix_qrcode_generation.repository.PixRepository;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,22 +20,19 @@ public class RefundQRCodeService {
 
     public Pix refund(UUID txid) {
 
-        Pix pix = pixRepository
-                .findByTxid(txid)
-                .orElseThrow(() -> new RuntimeException("Pix not found"));
+        Pix pix = pixRepository.findByTxid(txid)
+                .orElseThrow(() -> new PixNotFoundException(txid));
 
         if (pix.getStatus() != PixStatus.PAID) {
-            throw new IllegalStateException(
-                    "Pix cannot be refunded. Current status: " + pix.getStatus()
-            );
+            throw new InvalidPixStateException(
+                    "Pix cannot be refunded. Current status: " + pix.getStatus());
         }
 
-        log.info("Setting Pix Status to REFUNDED");
-
         pix.setStatus(PixStatus.REFUNDED);
+        Pix saved = pixRepository.save(pix);
 
-        log.info("Done! Pix Status set to REFUNDED");
+        log.info("Pix refunded: PAID -> REFUNDED");
 
-        return pixRepository.save(pix);
+        return saved;
     }
 }

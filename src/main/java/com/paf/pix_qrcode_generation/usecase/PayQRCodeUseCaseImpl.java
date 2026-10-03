@@ -2,16 +2,17 @@ package com.paf.pix_qrcode_generation.usecase;
 
 import com.paf.pix_qrcode_generation.dto.input.QRCodePaymentRequestDTO;
 import com.paf.pix_qrcode_generation.dto.output.QRCodePaymentResponseDTO;
-import com.paf.pix_qrcode_generation.dto.output.QRCodeRefundResponseDTO;
 import com.paf.pix_qrcode_generation.entity.Pix;
 import com.paf.pix_qrcode_generation.entity.PixStatus;
+import com.paf.pix_qrcode_generation.exception.InvalidPixStateException;
+import com.paf.pix_qrcode_generation.exception.PixNotFoundException;
 import com.paf.pix_qrcode_generation.repository.PixRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,37 +24,37 @@ public class PayQRCodeUseCaseImpl implements PayQRCodeUseCase {
     @Override
     public QRCodePaymentResponseDTO execute(QRCodePaymentRequestDTO request) {
 
-        log.info("payQRCodeUseCase.execute method started!");
+        try (var ignoredTx = MDC.putCloseable("txid", request.txid().toString());
+             var ignoredReq = MDC.putCloseable("pixRequestId", request.requestId())) {
 
-        Pix pix = pixRepository.findByTxid(request.txid())
-                .orElseThrow(() -> new RuntimeException(
-                        "Pix not found for txid: " + request.txid()
-                ));
+            log.info("Processing payment");
 
-        if (pix.getStatus() != PixStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Pix cannot be paid. Current status: " + pix.getStatus()
-            );
-        }
+            Pix pix = pixRepository.findByTxid(request.txid())
+                    .orElseThrow(() -> new PixNotFoundException(request.txid()));
 
-        if (Instant.now().isAfter(pix.getExpiresAt())) {
-            pix.setStatus(PixStatus.EXPIRED);
+            if (pix.getStatus() != PixStatus.PENDING) {
+                throw new InvalidPixStateException(
+                        "Pix cannot be paid. Current status: " + pix.getStatus());
+            }
+
+            if (Instant.now().isAfter(pix.getExpiresAt())) {
+                pix.setStatus(PixStatus.EXPIRED);
+                pixRepository.save(pix);
+                log.info("Pix expired before payment: PENDING -> EXPIRED (expiresAt={})", pix.getExpiresAt());
+                throw new InvalidPixStateException("Pix has expired");
+            }
+
+            pix.setStatus(PixStatus.PAID);
             pixRepository.save(pix);
 
-            throw new IllegalStateException("Pix has expired");
+            log.info("Pix paid: PENDING -> PAID");
+
+            return new QRCodePaymentResponseDTO(
+                    pix.getRequestId(),
+                    pix.getTxid().toString(),
+                    pix.getStatus().toString(),
+                    "Payment processed successfully"
+            );
         }
-
-        pix.setStatus(PixStatus.PAID);
-
-        pixRepository.save(pix);
-
-        log.info("Pix {} successfully paid", pix.getTxid());
-
-        return new QRCodePaymentResponseDTO(
-                pix.getRequestId(),
-                pix.getTxid().toString(),
-                pix.getStatus().toString(),
-                "Payment processed successfully"
-        );
     }
 }

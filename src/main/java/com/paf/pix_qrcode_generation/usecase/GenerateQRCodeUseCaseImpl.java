@@ -8,6 +8,7 @@ import com.paf.pix_qrcode_generation.repository.PixRepository;
 import com.paf.pix_qrcode_generation.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,47 +25,50 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
     @Override
     public QRCodeResponseDTO execute(PixRequestDTO request) {
 
-        log.info("generateQRCodeUseCase.execute method started!");
-
-        if (request.expiration() <= 0) {
-            throw new IllegalArgumentException("Expiration must be greater than zero");
-        }
-
-        if (new BigDecimal(request.amount()).compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be greater than zero");
-        }
-
         Pix pix = new Pix();
 
-        pix.setRequestId(request.requestId());
-        pix.setAmount(request.amount());
-        pix.setPixKey(request.pixKey());
-        pix.setExpiration(request.expiration());
-        pix.setDescription(request.description());
-        pix.setExpiresAt(Instant.now().plusSeconds(request.expiration()));
-        pix.setReceiverName(request.receiver().name());
-        pix.setReceiverCity(request.receiver().city());
+        try (var ignoredTx = MDC.putCloseable("txid", pix.getTxid().toString());
+             var ignoredReq = MDC.putCloseable("pixRequestId", request.requestId())) {
 
-        log.info("Calling qrCodeService.generate method");
-        String qrCode = qrCodeService.generate(pix);
+            log.info("Generating QRCode: amount={} channel={} expirationSeconds={}",
+                    request.amount(), request.channel(), request.expiration());
 
-        log.info("QRCode received!");
+            if (request.expiration() <= 0) {
+                throw new IllegalArgumentException("Expiration must be greater than zero");
+            }
 
-        pix.setQrCode(qrCode);
-        pix.setStatus(PixStatus.PENDING);
+            BigDecimal amount;
+            try {
+                amount = new BigDecimal(request.amount());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Amount is not a valid number");
+            }
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Amount must be greater than zero");
+            }
 
-        log.info("Persisting data into dynamoDB...");
+            pix.setRequestId(request.requestId());
+            pix.setAmount(request.amount());
+            pix.setPixKey(request.pixKey());
+            pix.setExpiration(request.expiration());
+            pix.setDescription(request.description());
+            pix.setExpiresAt(Instant.now().plusSeconds(request.expiration()));
+            pix.setReceiverName(request.receiver().name());
+            pix.setReceiverCity(request.receiver().city());
 
-        pixRepository.save(pix);
+            pix.setQrCode(qrCodeService.generate(pix));
+            pix.setStatus(PixStatus.PENDING);
 
-        log.info("QRCode saved with PENDING status!");
-        log.info("QRCode generation process finished successfully!");
+            pixRepository.save(pix);
 
-        return new QRCodeResponseDTO(
-                pix.getRequestId(),
-                pix.getTxid().toString(),
-                pix.getStatus().name(),
-                pix.getExpiresAt()
-        );
+            log.info("QRCode generated and saved: status={} expiresAt={}", pix.getStatus(), pix.getExpiresAt());
+
+            return new QRCodeResponseDTO(
+                    pix.getRequestId(),
+                    pix.getTxid().toString(),
+                    pix.getStatus().name(),
+                    pix.getExpiresAt()
+            );
+        }
     }
 }
