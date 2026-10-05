@@ -37,7 +37,7 @@ public class QRCodeController {
                 .body(response);
     }
 
-    @PostMapping("/pay")
+    @PostMapping("/payQRcode")
     public ResponseEntity<QRCodePaymentResponseDTO> payQRCode(@Valid @RequestBody QRCodePaymentRequestDTO request) {
         log.info("Payment request received! Calling payQRCodeUseCase.execute method.");
         QRCodePaymentResponseDTO response = payQRCodeUseCase.execute(request);
