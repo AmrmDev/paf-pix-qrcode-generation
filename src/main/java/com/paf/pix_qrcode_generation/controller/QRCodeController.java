@@ -45,7 +45,7 @@ public class QRCodeController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping("/refund")
+    @PostMapping("/refundQRCode")
     public ResponseEntity<QRCodeRefundResponseDTO> refund(@Valid @RequestBody QRCodeRefundRequestDTO request) {
         log.info("Initializing refundQRCodeUseCase.execute method");
         QRCodeRefundResponseDTO response = refundQRCodeUseCase.execute(request);
