@@ -27,8 +27,7 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
 
         Pix pix = new Pix();
 
-        try (var ignoredTx = MDC.putCloseable("txid", pix.getTxid().toString());
-             var ignoredReq = MDC.putCloseable("pixRequestId", request.requestId())) {
+        try (var ignoredTx = MDC.putCloseable("txid", pix.getTxid().toString())) {
 
             log.info("Generating QRCode: amount={} channel={} expirationSeconds={}",
                     request.amount(), request.channel(), request.expiration());
@@ -47,7 +46,6 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
                 throw new IllegalArgumentException("Amount must be greater than zero");
             }
 
-            pix.setRequestId(request.requestId());
             pix.setAmount(request.amount());
             pix.setPixKey(request.pixKey());
             pix.setExpiration(request.expiration());

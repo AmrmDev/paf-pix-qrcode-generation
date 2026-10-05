@@ -32,6 +32,7 @@ public class QRCodeController {
         log.info("Initializing generateQRCodeUseCase.execute method");
         QRCodeResponseDTO response = generateQRCodeUseCase.execute(request);
 
+        System.out.println(response.txid());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
