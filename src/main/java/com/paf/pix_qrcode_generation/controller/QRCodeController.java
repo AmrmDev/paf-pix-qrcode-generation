@@ -27,7 +27,7 @@ public class QRCodeController {
         this.payQRCodeUseCase = payQRCodeUseCase;
     }
 
-    @PostMapping("/generate")
+    @PostMapping("/generateQRCode")
     public ResponseEntity<QRCodeResponseDTO> generate(@Valid @RequestBody PixRequestDTO request) {
         log.info("Initializing generateQRCodeUseCase.execute method");
         QRCodeResponseDTO response = generateQRCodeUseCase.execute(request);
