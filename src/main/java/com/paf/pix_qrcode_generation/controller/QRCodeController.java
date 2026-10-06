@@ -5,6 +5,7 @@ import com.paf.pix_qrcode_generation.dto.input.*;
 import com.paf.pix_qrcode_generation.usecase.GenerateQRCodeUseCase;
 import com.paf.pix_qrcode_generation.usecase.PayQRCodeUseCase;
 import com.paf.pix_qrcode_generation.usecase.RefundQRCodeUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
@@ -27,15 +28,17 @@ public class QRCodeController {
         this.payQRCodeUseCase = payQRCodeUseCase;
     }
 
-    @PostMapping("/generateQRCode")
-    public ResponseEntity<QRCodeResponseDTO> generate(@Valid @RequestBody PixRequestDTO request) {
-        log.info("Initializing generateQRCodeUseCase.execute method");
-        QRCodeResponseDTO response = generateQRCodeUseCase.execute(request);
+    @PostMapping("/generate")
+    public ResponseEntity<QRCodeResponseDTO> generate(
+            HttpServletRequest httpRequest,
+            @Valid @RequestBody PixRequestDTO request
+    ) {
+        String requestId = (String) httpRequest.getAttribute("X-Request-Id");
+        log.info("Controller requestId={}", requestId);
+        QRCodeResponseDTO response =
+                generateQRCodeUseCase.execute(request, requestId);
 
-        System.out.println(response.txid());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/payQRCode")

@@ -23,9 +23,10 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
     private final PixRepository pixRepository;
 
     @Override
-    public QRCodeResponseDTO execute(PixRequestDTO request) {
+    public QRCodeResponseDTO execute(PixRequestDTO request, String requestId) {
 
         Pix pix = new Pix();
+        pix.setRequestId(requestId);
 
         try (var ignoredTx = MDC.putCloseable("txid", pix.getTxid().toString())) {
 

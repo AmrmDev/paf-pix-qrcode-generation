@@ -28,25 +28,34 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws ServletException, IOException {
 
         String requestId = request.getHeader(HEADER);
+
         if (requestId == null || requestId.isBlank() || requestId.length() > 64) {
             requestId = UUID.randomUUID().toString();
         }
 
         MDC.put(MDC_KEY, requestId);
+
+        request.setAttribute(HEADER, requestId);
+
         response.setHeader(HEADER, requestId);
 
         long start = System.nanoTime();
+
         try {
             chain.doFilter(request, response);
         } finally {
             long ms = (System.nanoTime() - start) / 1_000_000;
             int status = response.getStatus();
+
             String line = "{} {} -> {} ({} ms)";
+
             if (status >= 500) {
                 log.error(line, request.getMethod(), request.getRequestURI(), status, ms);
             } else if (status >= 400) {
@@ -54,6 +63,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             } else {
                 log.info(line, request.getMethod(), request.getRequestURI(), status, ms);
             }
+
             MDC.remove(MDC_KEY);
         }
     }
