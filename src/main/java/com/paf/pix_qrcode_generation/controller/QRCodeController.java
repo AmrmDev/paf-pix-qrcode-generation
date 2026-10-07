@@ -34,10 +34,12 @@ public class QRCodeController {
             @Valid @RequestBody PixRequestDTO request
     ) {
         String requestId = (String) httpRequest.getAttribute("X-Request-Id");
-        log.info("Controller requestId={}", requestId);
+
+        log.info("GENERATE QRCODE EVENT RECEIVED");
         QRCodeResponseDTO response =
                 generateQRCodeUseCase.execute(request, requestId);
 
+        log.info("GENERATE QRCODE FINISHED");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
