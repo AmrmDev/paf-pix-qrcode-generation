@@ -31,15 +31,6 @@ public class PixRepositoryImpl implements PixRepository {
     public Pix save(Pix pix) {
 
         Map<String, AttributeValue> item = new HashMap<>();
-
-        log.info("Repository data - requestId={}, txid={}, amount={}, pixKey={}, status={}, expiresAt={}",
-                pix.getRequestId(),
-                pix.getTxid(),
-                pix.getAmount(),
-                pix.getPixKey(),
-                pix.getStatus(),
-                pix.getExpiresAt());
-
         item.put("requestId", AttributeValue.builder().s(pix.getRequestId()).build());
         item.put("txid", AttributeValue.builder().s(pix.getTxid().toString()).build());
         item.put("amount", AttributeValue.builder().s(pix.getAmount()).build());
@@ -47,10 +38,12 @@ public class PixRepositoryImpl implements PixRepository {
         item.put("status", AttributeValue.builder().s(pix.getStatus().name()).build());
         item.put("expiresAt", AttributeValue.builder().s(pix.getExpiresAt().toString()).build());
 
+        log.info("PERSISTING DATA INTO DYNAMODB");
         PutItemRequest request = PutItemRequest.builder().tableName(TABLE).item(item).build();
 
         logged("putItem", () -> dynamoDbClient.putItem(request));
 
+        log.info("DATA SAVED INTO DYNAMODB");
         return pix;
     }
 

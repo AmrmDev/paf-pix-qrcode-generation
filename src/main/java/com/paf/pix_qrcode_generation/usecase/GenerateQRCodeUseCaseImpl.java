@@ -30,7 +30,7 @@ public class GenerateQRCodeUseCaseImpl implements GenerateQRCodeUseCase {
 
         try (var ignoredTx = MDC.putCloseable("txid", pix.getTxid().toString())) {
 
-            log.info("Generating QRCode: amount={} channel={} expirationSeconds={}",
+            log.info("GENERATING QRCODE: amount={} channel={} expirationSeconds={}",
                     request.amount(), request.channel(), request.expiration());
 
             if (request.expiration() <= 0) {
